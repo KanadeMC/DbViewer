@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using Microsoft.EntityFrameworkCore;
 
 namespace zalupa.DataModel;
 
@@ -17,14 +18,26 @@ public partial class AbsoluteCinemaContext : DbContext
     {
     }
 
-    public async Task<List<T>> GetListAsync<T>(AbsoluteCinemaContext context,
-        Expression<Func<T, bool>>? filter = null) where T : class
+    public async Task<List<object>> GetListByTypeAsync(Type entityType)
     {
-        IQueryable<T> query = context.Set<T>().AsNoTracking();
-        if (filter != null)
-            query = query.Where(filter);
+        // 1. Берем стандартный метод Set<T>() у DbContext и подставляем в него ваш Type
+        var setMethod = typeof(AbsoluteCinemaContext)
+            .GetMethod(nameof(Set), Type.EmptyTypes)!
+            .MakeGenericMethod(entityType);
 
-        return await query.ToListAsync();
+        var dbSet = setMethod.Invoke(this, null)!;
+
+        // 2. Вызываем стандартный ToListAsync() из Entity Framework для этого DbSet
+        var toListMethod = typeof(EntityFrameworkQueryableExtensions)
+            .GetMethod(nameof(EntityFrameworkQueryableExtensions.ToListAsync))!
+            .MakeGenericMethod(entityType);
+
+        var task = (Task)toListMethod.Invoke(null, new object?[] { dbSet, CancellationToken.None })!;
+        await task;
+
+        // 3. Достаем готовый список из результата задачи
+        var result = task.GetType().GetProperty("Result")!.GetValue(task);
+        return ((IEnumerable)result!).Cast<object>().ToList();
     }
 
     public virtual DbSet<Client> Clients { get; set; }

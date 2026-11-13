@@ -39,7 +39,7 @@ namespace zalupa
         public List<Type> GetClassesInNamespace(Assembly assembly, string nameSpace)
         {
             return assembly.GetTypes()
-                .Where(t => t.IsClass && t.IsPublic && !t.IsAbstract && t.Namespace == nameSpace && !typeof(DbContext).IsAssignableFrom(t)) 
+                .Where(t => t.IsClass && t.IsPublic && !t.IsAbstract && t.Namespace == nameSpace && !typeof(AbsoluteCinemaContext).IsAssignableFrom(t)) 
                 .ToList();
         }
         //Загружаем все классы в ComboBox
