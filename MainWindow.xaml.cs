@@ -19,15 +19,20 @@ namespace zalupa
     {
         public Type? currentClass;
         private PropertyInfo? currentSortProperty;
-        private bool currentSortDirectionBool;              // true = DESC
+        private bool currentSortDirectionBool = true;              // true = DESC
         public MainWindow()
         {
             InitializeComponent();
             LoadAllModelTypes();
+            currentClass = typeof(Film);
             currentSortDirectionBool = true;
+            LoadInitialData();
+        }
+        public async void LoadInitialData()
+        {
             using (AbsoluteCinemaContext context = new AbsoluteCinemaContext())
             {
-                dgview.ItemsSource = LoadAll<Film>(context);
+                dgview.ItemsSource = await context.GetListByTypeAsync(currentClass);
             }
         }
         //Получаем все классы с DataModel

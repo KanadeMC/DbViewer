@@ -1,5 +1,5 @@
 ﻿zalupa
-
+1.0.0.0
 
 winexe
 C#
@@ -12,9 +12,9 @@ TRACE;DEBUG;NET;NET10_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_O
 I:\kakayatokaka\App.xaml
 11407045341
 
-121672969243
+14-57522010
 2211923478734
 MainWindow.xaml;
 
-False
+True
 

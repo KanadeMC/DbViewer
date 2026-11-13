@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace zalupa.DataModel;
@@ -13,6 +15,16 @@ public partial class AbsoluteCinemaContext : DbContext
     public AbsoluteCinemaContext(DbContextOptions<AbsoluteCinemaContext> options)
         : base(options)
     {
+    }
+
+    public async Task<List<T>> GetListAsync<T>(AbsoluteCinemaContext context,
+        Expression<Func<T, bool>>? filter = null) where T : class
+    {
+        IQueryable<T> query = context.Set<T>().AsNoTracking();
+        if (filter != null)
+            query = query.Where(filter);
+
+        return await query.ToListAsync();
     }
 
     public virtual DbSet<Client> Clients { get; set; }
